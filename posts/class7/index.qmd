@@ -1,0 +1,10 @@
+---
+title: "Class7"
+author: "Khushboo"
+---
+
+### Comparing multiple means with ANOVA
+
+```{r}
+
+```

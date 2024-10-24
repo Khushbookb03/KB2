@@ -1,0 +1,124 @@
+---
+title: "Groups, class 5"
+author: "Khushboo"
+---
+
+## Groups
+
+I will be dealing with a new code and a new kind of plotting called gf_box plot and box plot respectively.
+
+```{r}
+library(tidyverse)
+library(mosaic)
+library(ggformula)
+library(palmerpenguins)
+library(skimr)
+library(dplyr)
+```
+
+## Wages data set
+
+```{r}
+wages <- read_csv("https://vincentarelbundock.github.io/Rdatasets/csv/stevedata/gss_wages.csv")
+wages
+```
+```{r}
+wages_clean <-
+  wages %>%
+  tidyr::drop_na(realrinc) # choose column or leave blank to choose all
+```
+
+
+
+
+
+
+
+```{r}
+wages_clean %>%
+  gf_boxplot(gender ~ realrinc) %>%
+  gf_labs(title = "Plot 2A: Income by Gender")
+
+
+```
+
+
+```{r}
+glimpse(wages)
+```
+
+```{r}
+skim(wages)
+```
+
+```{r}
+inspect(wages)
+```
+
+we note that this is a large dataset (61K rows), with 11 variables
+
+```{r}
+gf_boxplot(realrinc ~ 1, data = wages_clean) %>%
+  gf_labs(
+    title = "Plot 1A: Income has a skewed distribution",
+    subtitle = "Many outliers on the high side"
+  )
+
+```
+
+```{r}
+wages_clean <-
+  wages %>%
+  tidyr::drop_na(realrinc)
+```
+
+### What is the basic distribution of realrinc?
+
+```{r}
+wages_clean %>%
+  gf_boxplot(realrinc ~ "Income") %>% # Dummy X-axis "variable"
+  gf_labs(
+    title = "Plot 1A: Income has a skewed distribution",
+    subtitle = "Many outliers on the high side"
+  )
+```
+
+-   Business insights-
+
+-   Income is a very skewed distribution, as might be expected.
+
+-   Presence of many higher-side outliers is noted, going up
+
+    ### is realrinc affected by gender?
+
+    ```{r}
+    wages_clean %>%
+      gf_boxplot(gender ~ realrinc) %>%
+      gf_labs(title = "Plot 2A: Income by Gender")
+    ```
+
+#### split by gender-
+
+```{r}
+wages_clean %>%
+  gf_boxplot(gender ~ log10(realrinc)) %>%
+  gf_labs(title = "Plot 2B: Log(Income) by Gender")
+```
+
+#### with log income-
+
+```{r}
+wages_clean %>%
+  gf_boxplot(gender ~ realrinc, fill = ~gender) %>%
+  gf_refine(scale_x_log10()) %>%
+  gf_labs(title = "Plot 2C: Income filled by Gender, log scale")
+```
+
+## Is realrinc affected by education?
+
+```{r}
+wages_clean %>%
+  gf_boxplot(educcat ~ realrinc) %>%
+  gf_labs(title = "Plot 3A: Income by Education Category")
+```
+

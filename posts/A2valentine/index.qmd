@@ -1,0 +1,170 @@
+---
+title: "Valentine's Day dataset"
+author: "Khushboo"
+---
+
+# Valentine's Day Dataset
+
+### *We will be looking at a new dataset and deduce inferences\~*
+
+[*Here's the link to the website!*](https://av-quarto.netlify.app/content/courses/analytics/casestudies/modules/90-valentinesday/)
+
+!![Flowers](images/Valentines+flower+delivery+nyc.webp){width="222"}
+
+## *DATA DICTIONARY*:
+
+| Qualitative data          |
+|---------------------------|
+| Candy                     |
+| Flowers                   |
+| Jewelry                   |
+| Greeting cards            |
+| Evening Out               |
+| Clothing                  |
+| Gift Cards                |
+| Age (since it is grouped) |
+
+| Quantitative data                  |
+|------------------------------------|
+| Spending on gifts and celebrations |
+
+## *Observation*:
+
+We have six age groups and eight items, multiplying them would give us in total 48 observations
+
+## ANALYZING/TRANSFORMING THE DATA\~
+
+### *Predictor variables (independent variables):*
+
+-   Age
+
+-   SpendingCelebrating
+
+-   Candy
+
+-   Flowers
+
+-   Jewelry
+
+-   GreetingCards
+
+-   EveningOut
+
+-   Clothing
+
+-   GiftCards
+
+### *Target variable (dependent variable)*:
+
+-   Age
+
+## Presenting the dataset below\~
+
+Rows: 6 Columns: 9 \$ Age \<chr\> "18-24", "25-34", "35-44", "45-54", "55-64", "65+" \$ SpendingCelebrating \<dbl\> 51, 40, 31, 19, 18, 13 \$ Candy \<dbl\> 70, 62, 58, 60, 50, 42 \$ Flowers \<dbl\> 50, 44, 41, 37, 32, 25 \$ Jewelry \<dbl\> 33, 34, 29, 20, 13, 8 \$ GreetingCards \<dbl\> 33, 33, 42, 42, 43, 44 \$ EveningOut \<dbl\> 41, 37, 30, 31, 29, 24 \$ Clothing \<dbl\> 33, 27, 26, 20, 19, 12 \$ GiftCards \<dbl\> 23, 19, 22, 23, 20, 20
+
+```{r}
+library(tidyverse)
+gifts_age <- readr::read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2024/2024-02-13/gifts_age.csv")
+glimpse(gifts_age)
+```
+
+## Installing the packages in the console and activating them below\~
+
+```{r}
+library(tidyverse)
+library(mosaic)
+library(dplyr)
+library(ggplot2)
+library(ggprism)
+library(skimr)
+library(ggformula)
+library(palmerpenguins)
+```
+
+## Doing Glimpse and inspect from dplyr package and skim from skimr package\~
+
+```{r}
+glimpse(gifts_age)
+```
+
+```{r}
+inspect(gifts_age)
+```
+
+```{r}
+skim(gifts_age)
+```
+
+## Code\~
+
+```{r}
+gifts_age <- data.frame(
+  Age = c("18-24", "25-34", "35-44", "45-54", "55-64", "65+"),
+  SpendingCelebrating = c(51, 40, 31, 19, 18, 13),
+  Candy = c(70, 62, 58, 60, 50, 42),
+  Flowers = c(50, 44, 41, 37, 32, 25),
+  Jewelry = c(33, 34, 29, 20, 13, 8),
+  GreetingCards = c(33, 33, 42, 42, 43, 44),
+  EveningOut = c(41, 37, 30, 31, 29, 24),
+  Clothing = c(33, 27, 26, 20, 19, 12),
+  GiftCards = c(23, 19, 22, 23, 20, 20)
+)
+
+# Tidy the data
+gifts_age_tidy <- gifts_age %>%
+  pivot_longer(cols = -Age, names_to = "GiftCategory", values_to = "AmountSpent")
+
+# Create a line chart with same colored dots joined
+ggplot(gifts_age_tidy, aes(x = Age, y = AmountSpent, color = GiftCategory)) +
+  geom_line(aes(group = GiftCategory)) + # Group lines by GiftCategory
+  geom_point() +
+  labs(title = "Valentine's Day Spending over Age",
+       x = "Age Group in Years",
+       y = "Amounts Spent per Gift") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+(trying code using ggformula, didn't work kindly refer to code and graph above)
+
+gf_line(AmountSpent \~ Age \| GiftCategory, data = gifts_age_tidy, group = NULL) + geom_point(aes(color = GiftCategory)) + \# Add points with colors labs(title = "Valentine's Day Spending over Age", x = "Age Group in Years", y = "Amounts Spent per Gift") + theme_minimal() + theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+### Note:(I wanted to get the graph using just ggformula, did not get the exact output hence used ggplot2 as well, kindly look at both codes)
+
+### *Chart Type*:
+
+The chart is a line chart. Line charts are effective for visualizing trends over a continuous variable, in this case, age groups.
+
+### *Variables and Geometric Aspects*:
+
+-   x-axis: Age Group in Years (categorical)
+
+-   y-axis: Amounts Spent per Gift (quantitative)
+
+-   Lines: Represent different gift categories (categorical)
+
+-   Colors: Differentiate the gift categories
+
+### *Research Activity*:
+
+The data for this chart likely came from a survey or questionnaire administered to a sample population. Participants would have been asked about their age and the amount they spent on various Valentine's Day gifts.
+
+### *Data preprocessing*:
+
+-   Data Cleaning: Removing any incomplete or inconsistent data.
+
+-   Grouping: Categorizing the age data into specific ranges (18-24, 25-34, etc.).
+
+-   Aggregation: Calculating the average spending per gift category for each age group.
+
+-   Hypothesis/Research Question: A possible hypothesis or research question could be: "Does the amount spent on Valentine's Day gifts vary significantly across different age groups?"
+
+### *Story based on the chart*:
+
+As the age group increases, the overall spending on Valentine's Day gifts tends to decrease. However, the spending patterns for different gift categories vary. While younger age groups spend more on items like candy and clothing, older age groups prioritize more sentimental gifts like greeting cards and jewelry.
+
+### *Overall spending trends*:
+
+Decreasing Spending with Age: As the age group increases, the overall spending on Valentine's Day gifts generally declines. This suggests that romantic gestures may become less extravagant or frequent with age. Shift in Spending Priorities: The spending patterns for different gift categories vary significantly across age groups. Younger individuals tend to focus on more tangible items like candy and clothing, while older individuals prioritize sentimental gifts such as greeting cards and jewelry.
+
+Changing Lifestyles: As people age, their lifestyles, financial situations, and priorities may change, influencing their spending habits on Valentine's Day. Relationship Dynamics: The nature of relationships may evolve over time, leading to different ways of celebrating Valentine's Day. Cultural Factors: Societal norms and expectations regarding Valentine's Day celebrations may vary across age groups and cultural contexts.

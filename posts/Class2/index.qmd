@@ -1,0 +1,230 @@
+---
+title: "Summarising data by throwing it away"
+author: "Khushboo B"
+format: html
+editor: visual
+---
+
+## Intro
+
+Summarising data for class 2, I am working with data summarising. First 'mpg' and then something else
+
+```{r}
+#| label: setup
+library(tidyverse)
+library(ggformula)
+library(mosaic)
+library(kableExtra)
+library(skimr)
+library(babynames)
+```
+
+## look at the mpg data dataset
+
+```{r}
+mpg
+```
+
+so any new package that I installed, I did it on my console using syntax- install.packages("package name") to activate it above, syntax would be- #\| label: setup
+
+library(name of package). That's it, I am good to go!
+
+```{r}
+mpg %>%
+  head(10) %>%
+  kbl(# add Human Readable column names
+    col.names = c(
+      "Manufacturer", "Model", "Engine\nDisplacement",
+      "Model\n Year", "Cylinders", "Transmission",
+      "Drivetrain", "City\n Mileage", "Highway\n Mileage",
+      "Fuel", "Class\nOf\nVehicle"
+    ),
+    caption = "MPG Dataset"
+  ) %>%
+  kable_styling(
+    bootstrap_options = c(
+      "striped", "hover",
+      "condensed", "responsive"
+    ),
+    full_width = F, position = "center"
+  )
+```
+
+ctrl+l to clear the console
+
+dplyr function of the package
+
+if the command is available in more than one package, put two colons :: only specific will come
+
+dataset is called mpg
+
+```{r}
+glimpse(mpg)
+```
+
+```{r}
+inspect(mpg)
+```
+
+glompse(mpg) and using mpg%\>%glimpse() same thing
+
+```{r}
+skimr::skim(mpg)
+```
+
+package type is written first then :: command written after colons
+
+eg- dplyr(package):: mutate(command)
+
+```{r}
+mpg_modified <- mpg %>%
+  dplyr::mutate(
+    cyl = as_factor(cyl),
+    fl = as_factor(fl),
+    drv = as_factor(drv),
+    class = as_factor(class),
+    trans = as_factor(trans)
+  )
+glimpse(mpg_modified)
+```
+
+we need to make the above things ordinal by modifying the data and analyse so whatever is intended to be ordinal is to be converted to ordinal by mutating . eg cylinder is ordinal, modify it
+
+ordinal variables are called factors
+
+## Looking at baby names data set
+
+```{r}
+inspect(babynames)
+```
+
+```{r}
+glimpse(babynames)
+```
+
+```{r}
+skimr::skim(babynames)
+```
+
+```{r}
+mpg_modified %>%
+  group_by(cyl) %>%
+  summarize(average_hwy = mean(hwy), count = n())
+```
+
+```{r}
+mpg_modified %>%
+  group_by(cyl, fl) %>%
+  summarize(average_hwy = mean(hwy), count = n())
+```
+
+grouping cylinders and fuels together so two variables grouped together
+
+```{r}
+mpg_modified%>%
+  group_by(manufacturer)%>%
+  summarize(average_cty= mean(cty),count=n())
+```
+
+## Analyzing math anxiety data
+
+```{r}
+math_anxiety <- read_csv("../../data/MathAnxiety.csv")
+math_anxiety
+```
+
+```{r}
+inspect(math_anxiety)
+```
+
+```{r}
+skimr::skim(math_anxiety)
+```
+
+```{r}
+glimpse(math_anxiety)
+```
+
+```{r}
+math_anxiety_modified <- read_delim(file="../../data/MathAnxiety.csv",delim=";")
+math_anxiety_modified
+```
+
+press tab and insert path, will be correct
+
+```{r}
+inspect(math_anxiety_modified)
+```
+
+```{r}
+glimpse(math_anxiety_modified)
+```
+
+```{r}
+skimr::skim(math_anxiety_modified)
+```
+
+## Analyzing Star trek data
+
+```{r}
+star_trek_books <- read_delim(file = "../../Data/star_trek_books.csv",delim=";")
+star_trek_books
+```
+
+```{r}
+inspect(star_trek_books)
+```
+
+```{r}
+glimpse(star_trek_books)
+```
+
+```{r}
+skimr::skim(star_trek_books)
+```
+
+```{r}
+math_anxiety_modified %>%
+  group_by(Gender) %>%
+  summarize (mean_AMAS=mean(AMAS),mean_RCMAS=mean(RCMAS),count=n())
+
+```
+
+using data frames and tibble operator of dplyr package
+
+```{r}
+df <- data.frame(
+Name = c("vipul", "jayesh", "anurag"),
+Age = c(25, 23, 22),
+Score = c(95, 89, 78)
+)
+df
+
+```
+
+```{r}
+tibble <- tibble(
+  Name=c("Vipul","Jayesh","Kb"),
+  Age=c(25,23,22),
+  Score=c(96,84,99)
+) 
+tibble
+```
+
+using pipes (%\>%) operator-
+
+```{r}
+# Load necessary libraries
+library(dplyr)
+
+# Example: Chain operations using the pipe operator
+result <- mtcars %>%
+filter(mpg > 20) %>%	 # Filter rows where mpg is greater than 20
+select(mpg, cyl, hp) %>% # Select specific columns
+group_by(cyl) %>%		 # Group the data by the 'cyl' variable
+summarise(mean_hp = mean(hp)) # Calculate the mean horsepower for each group
+
+# Display the result
+print(result)
+
+```

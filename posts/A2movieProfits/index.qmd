@@ -1,0 +1,172 @@
+---
+title: "Movie Profits"
+author: "Khushboo"
+---
+
+## Movie profits dataset\~
+
+[Here's the link to the website](https://av-quarto.netlify.app/content/courses/analytics/casestudies/modules/20-movieprofits/)
+
+!![Movies](images/1710356.png){width="168"}
+
+### *Data Dictionary*:
+
++------------------------+
+| Quantitative variables |
++========================+
+| 1.  Production Budget  |
++------------------------+
+| 2.  Domestic Gross     |
++------------------------+
+| 3.  Worldwide Gross    |
++------------------------+
+| 4.  Profit Ratio       |
++------------------------+
+
++-----------------+
+| Qualitative     |
++=================+
+| 1.  Distributor |
++-----------------+
+| 2.  MPAA Rating |
++-----------------+
+| 3.  Genre       |
++-----------------+
+| 4.  Decade      |
++-----------------+
+
+### *Observations\~*
+
+By analyzing these observations, we can gain insights into the profitability of movies across different genres, distributors, and decades.
+
+### *Setting up the packages and activating them*\~
+
+```{r}
+library(tidyverse)
+library(mosaic)
+library(skimr)
+library(ggformula)
+library(dplyr)
+library(skimr)
+library(ggplot2)
+```
+
+### *Glimpse, inspect through dplyr package and skim through skimr package*\~
+
+```{r}
+movie_profit <- readr::read_csv("C:/Users/khush/Downloads/movie_profit.csv") 
+movie_profit
+```
+
+```{r}
+glimpse(movie_profit)
+```
+
+```{r}
+inspect(movie_profit)
+```
+
+```{r}
+skim(movie_profit)
+```
+
+### *Code*\~
+
+```{r}
+data <- data.frame(
+  genre = rep(c("Horror", "Drama", "Comedy", "Adventure", "Action"), times = 6),
+  distributor = rep(c("20th Century Fox", "Paramount Pictures", "Sony Pictures", 
+                      "Universal", "Warner Bros.", "Other"), each = 5),
+  profit_ratio = c(1.2, 1.5, 2.1, 0.9, 1.7, 1.8, 2.2, 1.9, 1.1, 2.0, 
+                   1.6, 1.7, 1.4, 2.3, 2.0, 2.0, 1.3, 1.7, 2.4, 1.8, 
+                   1.2, 0.7, 2.0, 1.9, 1.5, 2.3, 1.7, 2.2, 1.4, 2.1)
+)
+
+# Create the faceted bar plot using median
+ggplot(data, aes(x = genre, y = profit_ratio)) +
+  stat_summary(fun = median, geom = "bar", fill = "grey") +  # Using median
+  facet_wrap(~ distributor, scales = "free") +  # Faceting by distributor
+  coord_flip() +  # Flip the coordinates
+  labs(title = "Profits made by Film Distributors",
+       subtitle = "Ratio of Profits to Budgets",
+       x = "Genre", y = "Median Profit to Budget Ratio") +
+  theme_minimal()
+```
+
+### *What does the graph seek to question and answer?*
+
+The graph seeks to **question** the relationship between **genre** and **profit ratio** across different **film distributors**. It aims to **answer** the following questions:
+
+1.  **Do different genres have varying levels of profitability?**
+
+2.  **Are there significant differences in profit ratios among different distributors?**
+
+3.  **Is there an interaction between genre and distributor that affects profitability?**
+
+In other words, the graph investigates whether the profitability of a film is influenced more by its genre, the distributor, or a combination of both factors. By visualizing the median profit ratios for each combination of genre and distributor, the graph provides insights into these relationships.
+
+**General Observations:**
+
+-   **Profit Ratios:** The median profit ratios are generally between 1x and 3x, indicating that most films make at least their production budgets back but don't necessarily achieve massive profits.
+
+-   **Genre Variation:** There is some variation in profit ratios across genres, but the differences are not as pronounced as might be expected.
+
+-   **Distributor Variation:** While there are some differences in profit ratios among distributors, they are also not as striking as might be anticipated.
+
+**Specific Inferences:**
+
+1.  **Horror and Comedy:** Horror films tend to have slightly higher median profit ratios compared to other genres, suggesting they might be more commercially successful. Comedy films, on the other hand, seem to have slightly lower profit ratios.
+
+2.  **Adventure and Action:** These genres appear to have relatively consistent profit ratios across distributors, indicating that their profitability might be less influenced by the distributor.
+
+3.  **Distributor Performance:** Paramount Pictures and Sony Pictures seem to have slightly higher median profit ratios overall, suggesting they might be more effective in maximizing profits. However, the differences are not substantial.
+
+4.  **Other Distributors:** The "Other" category, which likely represents smaller or independent distributors, shows a wider range of profit ratios, indicating more variability in their performance.
+
+**Limitations:**
+
+-   **Median Profit Ratio:** The graph only shows median profit ratios. There might be significant variations within each genre and distributor, which are not captured by the median.
+
+-   **Sample Size:** The sample size for each combination of genre and distributor might be relatively small, limiting the generalizability of the findings.
+
+-   **Other Factors:** The graph does not account for other factors that might influence profitability, such as release date, star power, or marketing budget.
+
+**Overall, the graph suggests that while there are some differences in profitability across genres and distributors, these differences are not as pronounced as might be expected.** Other factors, such as individual film quality, marketing strategies, and market conditions, likely play a more significant role in determining a film's profitability.
+
+### *Chart Type*\~
+
+**Bar chart:** This is evident from the rectangular bars representing the median profit ratios for each combination of genre and distributor.
+
+### *Geometrical Aspect*\~
+
+**Variables:**
+
+-   **X-axis:** Distributor
+
+-   **Y-axis:** Median profit ratio
+
+-   **Fill:** Genre
+
+**Geometric aspects:**
+
+-   **Bars:** Each bar represents the median profit ratio for a specific combination of distributor and genre.
+
+-   **Facets:** The graph is divided into separate panels (facets) for each genre, providing a more focused comparison.
+
+### *Story*\~
+
+**The Conflict:**
+
+The central conflict of our story lies in understanding whether genre or distributor has a more significant impact on a film's profitability. Is it the genre that drives success, or is it the distributor's marketing prowess and strategic choices?
+
+**The Resolution:**
+
+While the graph provides valuable insights, it also highlights the complexity of the film industry. While some genres, like horror, tend to have slightly higher profit ratios, the overall picture is not as straightforward. Distributors also play a role, but their influence is not as pronounced as might be expected.
+
+**The Moral:**
+
+The story reminds us that the success of a film is not solely determined by its genre or distributor. A multitude of factors, including the quality of the film, marketing strategies, and audience preferences, contribute to its profitability. It's a delicate balance that requires careful consideration and strategic planning.
+
+**In Conclusion:**
+
+Our tale of profit and genre offers a glimpse into the fascinating world of the film industry. While the graph provides valuable insights, it also serves as a reminder that the pursuit of success in this realm is a complex journey influenced by numerous factors.

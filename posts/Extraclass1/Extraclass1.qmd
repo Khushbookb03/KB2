@@ -1,0 +1,25 @@
+---
+title: "Extra class Day 1"
+author: "Khushboo"
+---
+
+```{r}
+library(rnaturalearth)
+library(rnaturalearthdata)
+
+# Run this in your console first
+# devtools::install_github("ropensci/rnaturalearthhires")
+library(rnaturalearth)
+
+# Plotting Maps
+library(tidyverse) # Maps using ggplot + geom_sf
+library(tmap) # Thematic Maps, static and interactive
+library(osmdata) # Fetch map data from osmdata.org
+library(leaflet) # interactive Maps
+library(threejs) # Globe maps in R. Part of the htmlwidgets family of packages
+
+# For Spatial Data Frame Processing
+library(sf)
+library(ggformula)
+library(ggplot2)
+```

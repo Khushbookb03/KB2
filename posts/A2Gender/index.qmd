@@ -1,0 +1,125 @@
+---
+title: "Gender at the work place"
+author: "Khushboo"
+---
+
+## *Gender at work places\~*
+
+[![Picture](images/male-female-gender-symbols-in-paper-work.webp){fig-alt="-" width="208"}](https://search.brave.com/images?q=gender)
+
+[Here's the link to the quarto website for this dataset!](https://av-quarto.netlify.app/content/courses/analytics/casestudies/modules/30-genderworkplace/)
+
+### *Introduction*\~
+
+This is a dataset pertaining to gender and compensation at the workplace, modified for ease of analysis and plotting.
+
+### *Data Dictionary*\~
+
+#### Quantitative Variables:
+
+-   **Year:** This variable is a double, indicating it represents numerical data. While the values in the example are all "2016," they are still considered quantitative as they represent a specific year.
+
+#### Qualitative Variables:
+
+-   **occupation:** This variable is a character, indicating it represents text or categorical data. Each occupation is a distinct category.
+
+-   **major_category:** This variable is also a character, representing categorical data. Each major category is a distinct group of occupations.
+
+### *Observation*\~
+
+#### General Trends:
+
+-   **Correlation between Salary and Female Representation:** There seems to be a general trend where occupations with higher percentages of female representation tend to have lower median salaries. However, there are also outliers that don't follow this pattern.
+
+-   **Variation in Salary Within Categories:** Even within the same major category (e.g., Healthcare Practitioners and Technical), there's a significant variation in median salaries among different occupations.
+
+-   **Influence of Total Workers:** The size of the points (representing the total number of workers) might indicate that occupations with larger workforces tend to have higher median salaries, but this correlation is not entirely clear from the limited data.
+
+### *Installing packages and activating them*\~
+
+```{r}
+library(dplyr)
+library(skimr)
+library(tidyverse)
+library(mosaic)
+library(ggformula)
+library(ggplot2)
+
+```
+
+### *Loading the Dataset*\~
+
+```{r}
+job_gender_data<- read_delim(file ="C:/Users/khush/Downloads/job_gender_data.csv", delim = ";")
+job_gender_data
+```
+
+### *Doing glimpse, inspect and skim*\~
+
+```{r}
+glimpse(job_gender_data)
+```
+
+```{r}
+inspect(job_gender_data)
+```
+
+```{r}
+skim(job_gender_data)
+```
+
+### *Code*\~ using ggplot
+
+```{r}
+ggplot(job_gender_data, aes(x = percent_female, y = total_earnings, size = total_workers)) +
+  geom_point() +
+  labs(
+    x = "% of Workforce Reported as Female",
+    y = "Median Salary in the Occupation",
+    title = "Salaries and Gender Proportion in the Workforce"
+  ) +
+  scale_size_area(name = "Total # of Workers") +
+  theme_minimal()
+```
+
+### *Trying ggformula*\~
+
+(Tried using ggformula as well, since it did not work kindly refer to the code and graph above)
+
+job_gender_data %\>% gf_point(median_salary_in_the_occupation \~ percent_female, size = total_workers/100000)%\>% gf_labs(title = "Salaries and Gender Proportion in the Workforce", x = "% of workforce reported as female", y = "Median salary in the occupation", size = "Total \# of workers")%\>% scale_size(breaks = c(500000, 1000000, 1500000, 2000000), labels = c("500,000", "1,000,000", "1,500,000", "2,000,000"))%\>% theme_minimal()
+
+### *Chart Type*\~
+
+The chart seems to be a scatter plot. Scatter plots are used to indicate a relationship between two numerical variables.
+
+### *Geometries and Mappings*\~
+
+Geom_point() is probably being used as the geometry here, that renders the points on the plot. These points are probably mapping to the following variables:\
+\
+x-axis: A measure of a numerical variable is related to gender or any form of metric of gender.\
+\
+y-axis: A measure of a numerical variable is related to salary, say median salary.\
+\
+size: A numeric variable number of workers in that occupation..
+
+### *Gender and Salaries*\~
+
+General trend obtained in scatter plot; gender plays a role in salaries. The trend in the plot is that occupations with higher percentage of females tend to have lower median salaries. However, there are outliars that did not follow this trend.
+
+### *Data Preprocessing*\~
+
+\
+Data Cleaning:\
+\
+Handle missing values: Remove rows with missing values or impute them using appropriate methods.\
+\
+Correct data types: Ensure that numerical variables (e.g., SALARY, NO_OF_WORKERS) are of numeric data type.\
+\
+Feature Engineering:\
+\
+Create a gender percentage variable: If GENDER is a categorical variable, create a new numerical variable representing the percentage of females in the occupation. This could be calculated based on the number of females and the total number of workers.\
+\
+Data Visualization:\
+\
+Create the scatter plot: Use ggplot2 or similar libraries to create the scatter plot, mapping the appropriate variables to the x-axis, y-axis, and point size.\
+\
