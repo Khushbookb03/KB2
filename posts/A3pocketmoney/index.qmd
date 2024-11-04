@@ -1,0 +1,183 @@
+---
+title: "A3pocketmoney"
+author: "Khushboo"
+---
+
+```{r}
+#| label: setup
+library(tidyverse)
+library(mosaic)
+library(skimr)
+library(ggformula)
+library(broom)
+library(crosstable)
+library(knitr)
+library(kableExtra)
+library(ggplot2)
+library(dplyr)
+```
+
+```{r}
+Pocket_Money <- read_csv("C:/Users/khush/Downloads/Pocket Money.csv")
+Pocket_Money
+```
+
+```{r}
+glimpse(Pocket_Money)
+```
+
+```{r}
+inspect(Pocket_Money)
+```
+
+```{r}
+skim(Pocket_Money)
+```
+
+```{r}
+Pocket_Money2 <- Pocket_Money %>%
+    mutate(
+        Preferance = case_when(
+            Money_spent > 500 ~ "High Spender",
+            Money_spent > 200 & Money_spent <= 500 ~ "Medium Spender",
+            TRUE ~ "Low Spender"
+        )
+    )
+
+# Convert 'Preferance' to a factor
+Pocket_Money2 <- Pocket_Money2 %>%
+    mutate(
+        Preferance = as_factor(Preferance)
+    )
+
+glimpse(Pocket_Money2)
+```
+
+#### *Mean and standard deviation*\~
+
+```{r}
+# Calculate mean of Money_spent
+Pocket_Money_mean <- mean(Pocket_Money$Money_spent)
+
+# Calculate standard deviation of Money_spent
+Pocket_Money_sd <- sd(Pocket_Money$Money_spent)
+
+cat("Mean money spent:", Pocket_Money_mean, "\n")
+cat("Standard deviation of money spent:", Pocket_Money_sd)
+```
+
+#### *Histograms for the dataset*\~
+
+```{r}
+ggplot(Pocket_Money, aes(x = Money_spent)) + 
+  geom_histogram(fill = "lightblue", color = "black") + 
+  labs(title = "Histogram of Money Spent", x = "Money Spent", y = "Frequency")
+```
+
+```{r}
+plot(density(Pocket_Money$Money_spent), 
+     main = "Density Plot of Money Spent", 
+     xlab = "Money Spent", 
+     ylab = "Density")
+```
+
+```{r}
+hist(Pocket_Money$Money_spent)
+```
+
+### *What is our null hypothesis?*
+
+-   There is no significant difference in the average amount of money spent between male and female individuals.
+
+-   This hypothesis suggests that any observed difference in the mean spending between the two genders is due to random chance and not a true difference in the population.
+
+### *Checking for Normality*\~
+
+#### *Wilcox test*\~
+
+```{r}
+shapiro.test(Pocket_Money$Money_spent)
+```
+
+#### *t-test*\~
+
+```{r}
+
+male_spending <- Pocket_Money$Money_spent[Pocket_Money$Gender == "Male"]
+female_spending <- Pocket_Money$Money_spent[Pocket_Money$Gender == "Female"]
+
+t_test_result <- t.test(male_spending, female_spending)
+
+print(t_test_result)
+```
+
+```{r}
+shapiro.test(Pocket_Money$Money_spent)
+```
+
+#### Permutation:
+
+```{r}
+Pocket_Money <- Pocket_Money %>%
+  mutate(Preferance = ifelse(Money_spent > 200, "High Spender", "Low Spender"))
+```
+
+```{r}
+
+# Create a Preferance variable based on a threshold (e.g., high spenders vs. low spenders)
+Pocket_Money2 <- Pocket_Money2 %>%
+  mutate(Preferance = ifelse(Money_spent > 200, "High Spender", "Low Spender"))
+
+# Calculate the mean Money_spent for each Preferance group
+group_means <- Pocket_Money2 %>%
+  group_by(Preferance) %>%
+  summarize(mean_Money_spent = mean(Money_spent))
+
+# Calculate the difference in means
+obs_diff_mean <- group_means$mean_Money_spent[1] - group_means$mean_Money_spent[2]
+
+print(obs_diff_mean)
+```
+
+```{r}
+Pocket_Money2 <- Pocket_Money2 %>%
+  mutate(Preferance = ifelse(Money_spent > 200, "High Spender", "Low Spender"))
+
+# Calculate the observed difference in means
+observed_diff <- mean(Pocket_Money2$Money_spent[Pocket_Money2$Preferance == "High Spender"]) - 
+                 mean(Pocket_Money2$Money_spent[Pocket_Money2$Preferance == "Low Spender"])
+
+# Set the number of permutations
+n_permutations <- 1000
+
+permuted_diffs <- numeric(n_permutations)
+
+for (i in 1:n_permutations) {
+  permuted_data <- Pocket_Money2 %>%
+    mutate(Preferance = sample(Preferance))
+  
+  permuted_diff <- mean(permuted_data$Money_spent[permuted_data$Preferance == "High Spender"]) - 
+                   mean(permuted_data$Money_spent[permuted_data$Preferance == "Low Spender"])
+  
+  permuted_diffs[i] <- permuted_diff
+}
+
+# Plot the null distribution
+hist(permuted_diffs, main = "Null Distribution of Difference in Means",
+     xlab = "Difference in Means")
+abline(v = observed_diff, col = "red") # Add a vertical line for the observed difference
+```
+
+```{r}
+
+null_dist_df <- data.frame(Difference = permuted_diffs)
+
+# Plot the null distribution with the observed difference
+ggplot(null_dist_df, aes(x = Difference)) +
+  geom_histogram(fill = "lightblue", color = "black", binwidth = 0.5, alpha = 0.8) +  # Adjust alpha for transparency
+  geom_vline(xintercept = observed_diff, color = "red", linetype = "dashed", size = 1.2) +  # Adjust line thickness
+  labs(title = "Null Distribution of Difference in Means",
+       x = "Difference in Means",
+       y = "Frequency") +
+  theme_minimal()  
+```

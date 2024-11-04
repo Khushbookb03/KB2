@@ -1,0 +1,151 @@
+---
+title: "Chhota-Bheem-Doraemon-Dragon-Tales"
+author: "Khushboo"
+df_print: paged
+---
+
+### ***Chhota Bheem vs Doraemon vs Dragon Tale***\~
+
+```{r}
+#| label: setup
+library(tidyverse)
+library(mosaic)
+library(skimr)
+library(ggformula)
+library(broom)
+library(crosstable)
+library(knitr)
+library(kableExtra)
+library(supernova)
+library(ggprism)
+library(patchwork)
+library(infer)
+library(jtools)
+library(flextable)
+
+```
+
+Let's first import and read our data set.
+
+```{r}
+cartoon <- read_csv("C:/Users/khush/Downloads/cartoon.csv")
+cartoon
+```
+
+```{r}
+glimpse(cartoon)
+```
+
+## Data Munging
+
+```{r}
+cartoon2 <- cartoon %>% 
+  mutate(
+    Gender = as_factor(Gender),
+    Cartoon = as_factor(Cartoon)
+  )
+glimpse(cartoon)
+```
+
+#### *NULL Hypothesis for this data set?*\~
+
+```{r}
+# Calculate mean and standard deviation of Rating
+summary_stats <- cartoon %>%
+  summarize(
+    Mean_Rating = mean(Rating, na.rm = TRUE),
+    SD_Rating = sd(Rating, na.rm = TRUE)
+  )
+
+# Print the summary statistics
+print(summary_stats)
+
+
+```
+
+#### *Histogram*\~
+
+```{r}
+ggplot(cartoon, aes(x = Rating)) +
+  geom_histogram(binwidth = 1, fill = "blue", color = "black", alpha = 0.7) +
+  labs(title = "Histogram of Ratings",
+       x = "Rating",
+       y = "Frequency") +
+  theme_minimal()
+
+```
+
+```{r}
+unique(cartoon$Gender)
+
+```
+
+#### *ANOVA*\~
+
+```{r}
+cartoon_anova <- aov(Rating ~ Cartoon, data = cartoon2)
+cartoon_anova
+```
+
+#### *Check for Normality*\~
+
+```{r}
+shapiro.test(x = cartoon2$Rating)
+```
+
+```{r}
+cartoon2 %>%
+  group_by(Cartoon) %>%
+  group_modify(~ .x %>%
+    select(Rating) %>%
+    as_vector() %>%
+    shapiro.test() %>%
+    broom::tidy())
+```
+
+```{r}
+cartoon2 %>%
+  as_tibble() %>%
+  gf_dhistogram(~Rating, data = .) %>%
+  gf_fitdistr()
+```
+
+The ratings appear to be spread across with several peaks, indicating that the data may not follow a simple normal distribution..
+
+#### *Permutation Test*\~
+
+```{r}
+observed_infer <- cartoon2 %>%
+  specify(Rating ~ Cartoon) %>%
+  hypothesise(null = "independence") %>%
+  calculate(stat = "F")
+observed_infer
+```
+
+The F-stat of 0.9 suggests that there is little to no difference in the means of the ratings of cartoons being compared.
+
+After this, we perform the permutation test.
+
+```{r}
+null_dist_infer <- cartoon2 %>%
+  specify(Rating ~ Cartoon) %>%
+  hypothesise(null = "independence") %>%
+  generate(reps = 4999, type = "permute") %>%
+  calculate(stat = "F")
+##
+null_dist_infer
+```
+
+This null distribution allows us to evaluate the stance of the F-stat value. By comparing the observed F-stat to this null distribution, we can assess how unusual or extreme it is.
+
+The distribution across all 4,999 samples show the overall spread of F-values under the null hypothesis.
+
+```{r}
+##
+null_dist_infer %>%
+  visualise(method = "simulation") +
+  shade_p_value(obs_stat = observed_infer$stat, direction = "right") +
+  scale_x_continuous(trans = "log10", expand = c(0, 0)) +
+  coord_cartesian(xlim = c(0.2, 500), clip = "off") +
+  annotation_logticks(outside = FALSE) 
+```

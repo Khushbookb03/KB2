@@ -1,0 +1,164 @@
+---
+title: "Tips"
+author: "Khushboo"
+---
+
+![](images/TIPS_B2C_Generic-Page_Why-Tips_v1-06.22_0%20(1).webp){width="275"}
+
+```{r}
+#| label: setup
+library(tidyverse)
+library(mosaic)
+library(skimr)
+library(ggformula)
+library(broom)
+library(crosstable)
+library(knitr)
+library(kableExtra)
+```
+
+```{r}
+tip <- read_csv("C:/Users/khush/Downloads/tip.csv")
+tip
+```
+
+```{r}
+glimpse(tip)
+```
+
+```{r}
+inspect(tip)
+```
+
+```{r}
+skim(tip)
+```
+
+```{r}
+tip2 <- tip %>% 
+  mutate(
+    Preferance = as_factor(Preferance)
+  )
+glimpse(tip2)
+```
+
+#### *Mean and standard deviation*\~
+
+```{r}
+tip_mean1 <- mosaic::mean(~Tip, data = tip2)
+tip_sd1 <- mosaic::sd(~Tip, data = tip2)
+tip_mean1
+tip_sd1
+```
+
+#### *Histograms for the dataset*\~
+
+```{r}
+tip2 %>% gf_histogram(~Tip, fill = ~Preferance) %>% 
+ gf_facet_wrap(vars(Preferance)) %>% 
+  gf_labs(title = "Do people tip?")
+```
+
+```{r}
+tip2 %>% gf_histogram(~Tip, fill = ~Gender) %>% 
+ gf_facet_wrap(vars(Gender)) %>% 
+  gf_labs(title = "Do people tip?")
+```
+
+### *What is our null hypothesis?*
+
+-   There is no difference in tips between Non-veg and Veg.
+
+-   There is no difference in tipping between Females and Males.
+
+### *Checking for Normality*\~
+
+```{r}
+tip2 %>% crosstable(Tip~Preferance) %>% as_flextable
+```
+
+#### t-test:
+
+```{r}
+mosaic::t_test(Tip~Preferance, data = tip2) %>% 
+  broom::tidy()
+```
+
+```{r}
+tip_mean <- mean(~Tip, data = tip2)
+belief1 <- 0 # What we think the mean is
+tip_diff_mosaic <- tip_mean - belief1
+tip_diff_mosaic
+```
+
+#### Shapiro test:
+
+```{r}
+tip2 %>% filter(Preferance == "Non-veg") %>% select(Tip) -> NonVeg
+tip2 %>% filter(Preferance == "Veg") %>% select(Tip) -> Veg
+NonVeg
+Veg
+```
+
+```{r}
+shapiro.test(NonVeg$Tip)
+shapiro.test(Veg$Tip)
+```
+
+#### Wilcox Test:
+
+```{r}
+wilcox.test(Tip~Preferance, data = tip2,
+            conf.int = TRUE,
+            conf.level = 0.95) %>% 
+  broom::tidy()
+```
+
+#### Permutation:
+
+```{r}
+obs_diff_mean <- diffmean(Tip ~ Preferance, data = tip2) 
+obs_diff_mean
+```
+
+```{r}
+null_dist_tip1 <- 
+  do(4999) * diffmean(data = tip2, 
+                      Tip ~ shuffle(Preferance))
+null_dist_tip1
+###
+prop1(~ diffmean <= obs_diff_mean, data = null_dist_tip1)
+###
+gf_histogram(data = null_dist_tip1, ~ diffmean, 
+             bins = 25) %>%
+  gf_vline(xintercept = obs_diff_mean, 
+           colour = "purple", linewidth = 1,
+           title = "Null Distribution by Permutation", 
+           subtitle = "Histogram") %>% 
+  gf_labs(x = "Difference in Means")
+###
+```
+
+#### Gender:
+
+```{r}
+obs_diff_mean2 <- diffmean(Tip ~ Gender, data = tip2) 
+obs_diff_mean2
+```
+
+```{r}
+null_dist_tip2 <- 
+  do(4999) * diffmean(data = tip2, 
+                      Tip ~ shuffle(Gender))
+null_dist_tip2
+###
+prop1(~ diffmean <= obs_diff_mean2, data = null_dist_tip2)
+###
+gf_histogram(data = null_dist_tip2, ~ diffmean, 
+             bins = 25) %>%
+  gf_vline(xintercept = obs_diff_mean2, 
+           colour = "purple", linewidth = 1,
+           title = "Null Distribution by Permutation", 
+           subtitle = "Histogram") %>% 
+  gf_labs(x = "Difference in Means")
+```
