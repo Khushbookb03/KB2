@@ -18,7 +18,7 @@ library(kableExtra)
 ```
 
 ```{r}
-tip <- read_csv("C:/Users/khush/Downloads/tip.csv")
+tip <- read_csv("../../Data/tip.csv")
 tip
 ```
 

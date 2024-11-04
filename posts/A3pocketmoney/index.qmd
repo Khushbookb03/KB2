@@ -18,7 +18,7 @@ library(dplyr)
 ```
 
 ```{r}
-Pocket_Money <- read_csv("C:/Users/khush/Downloads/Pocket Money.csv")
+Pocket_Money <- read_csv("../../Data/Pocket Money.csv")
 Pocket_Money
 ```
 

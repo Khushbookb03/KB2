@@ -31,7 +31,7 @@ library(coin)
 #### *Importing dataset*\~
 
 ```{r}
-courses <- read_csv("C:/Users/khush/Downloads/courses.csv")
+courses <- read_csv("../../Data/courses.csv")
 courses
 ```
 

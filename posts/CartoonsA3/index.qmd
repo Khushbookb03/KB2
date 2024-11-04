@@ -28,7 +28,7 @@ library(flextable)
 Let's first import and read our data set.
 
 ```{r}
-cartoon <- read_csv("C:/Users/khush/Downloads/cartoon.csv")
+cartoon <- read_csv("../../Data/cartoon.csv")
 cartoon
 ```
 
